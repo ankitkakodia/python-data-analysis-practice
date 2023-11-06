@@ -20,8 +20,8 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     op.create_table(
-        'books',
-        sa.Column('book_id', sa.Integer, primary_key=True),
+        'bookstore_books',
+        sa.Column('book_id', sa.Integer, primary_key=True,autoincrement=True),
         sa.Column('book_title', sa.String(length=255), nullable=False),
         sa.Column('author_id', sa.Integer, nullable=False),
         sa.Column('cost_price', sa.Integer, nullable=True),
@@ -31,26 +31,26 @@ def upgrade() -> None:
     )
 
     op.create_table(
-        'author',
-        sa.Column('author_id', sa.Integer, primary_key=True),
+        'bookstore_author',
+        sa.Column('author_id', sa.Integer, primary_key=True,autoincrement=True),
         sa.Column('author_name', sa.String(length=100), nullable=True)
     )
     op.create_table(
-        'category',
-        sa.Column('category_id', sa.Integer, primary_key=True),
+        'bookstore_category',
+        sa.Column('category_id', sa.Integer, primary_key=True,autoincrement=True),
         sa.Column('category_name', sa.String(length=255), nullable=False)
     )
 
     op.create_table(
-        'books_category',
-        sa.Column('id', sa.Integer, primary_key=True),
+        'bookstore_books_category',
+        sa.Column('id', sa.Integer, primary_key=True,autoincrement=True),
         sa.Column('category_id', sa.Integer, nullable=False),
         sa.Column('book_id', sa.Integer, nullable=False)
     )
 
 
 def downgrade() -> None:
-    op.drop_table("books")
-    op.drop_table("author")
-    op.drop_table("category")
-    op.drop_table("books_category")
+    op.drop_table("bookstore_books")
+    op.drop_table("bookstore_author")
+    op.drop_table("bookstore_category")
+    op.drop_table("bookstore_books_category")

@@ -1,0 +1,6 @@
+Required pakages
+
+alembic           1.12.1
+mysqlclient       2.2.0
+PyMySQL           1.1.0
+SQLAlchemy        2.0.23
