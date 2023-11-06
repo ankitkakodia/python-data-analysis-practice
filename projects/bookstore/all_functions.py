@@ -1,7 +1,7 @@
 import pymysql
 from settings import *
 
-
+# Need to make connection with database
 def connection_database():
     try:
         connection = pymysql.connect(host='localhost',user='root',password='1234',database='python_data_analysis_projects')
@@ -12,7 +12,7 @@ def connection_database():
         print(f'Error: {ex}')
         raise ValueError(ex)
         
-
+# defining function to add in books table
 def add_book_table(book_title,author_name,book_cp,book_sp,book_MRP,book_inventory):
     connection, cur = connection_database()
     veiw_book = f"select book_id from bookstore_books where book_title = '{book_title}'"
@@ -24,7 +24,7 @@ def add_book_table(book_title,author_name,book_cp,book_sp,book_MRP,book_inventor
         add_new_book = f"insert into bookstore_books (book_title,author_name,cost_price,selling_price,MRP,inventory) values('{book_title}','{author_name}',{book_cp},{book_sp},{book_MRP},{book_inventory});"
         cur.execute(add_new_book)
         connection.commit()
-        print(f"new book {book_title} added successfully")
+        # print(f"New book '{book_title}' added successfully")
         veiw_book = f"select book_id from bookstore_books where book_title = '{book_title}'"
         cur.execute(veiw_book)
         book_id = cur.fetchall()
@@ -32,8 +32,8 @@ def add_book_table(book_title,author_name,book_cp,book_sp,book_MRP,book_inventor
             book_id = book_id[0][0]
     connection.close()
     return book_id
-        
 
+# defining function to add in author table  
 def add_author_table(author_name):
     connection, cur = connection_database()
     veiw_author = f"select author_id from bookstore_author where author_name = '{author_name}'"
@@ -45,7 +45,7 @@ def add_author_table(author_name):
         add_new_author = f"insert into bookstore_author (author_name) values('{author_name}');"
         cur.execute(add_new_author)
         connection.commit()
-        print(f"new author {author_name} added successfully")
+        # print(f"New author '{author_name}' added successfully")
         veiw_author = f"select author_id from bookstore_author where author_name = '{author_name}'"
         cur.execute(veiw_author)
         author_id = cur.fetchall()
@@ -54,17 +54,7 @@ def add_author_table(author_name):
     connection.close()
     return author_id
         
-
-# def view_cat_id():
-#     # connection, cur = connection_database()
-#     category_id_list = list()
-#     veiw_category = f"select category_id from bookstore_category where category_name = '{category}'"
-#     cur.execute(veiw_category)
-#     category_id = cur.fetchall()[0][0]
-#     # if category_id:
-#     #     category_id_list.append(category_id)
-#     #     return category_id_list
-
+# defining function to add in category table  
 def add_category_table(category):
     connection, cur = connection_database()
     category = category.split(',')
@@ -79,7 +69,7 @@ def add_category_table(category):
             add_new_category = f"insert into bookstore_category (category_name) values('{i}');"
             cur.execute(add_new_category)
             connection.commit()
-            print(f"new category {i} added successfully")
+            # print(f"New category '{i}' added successfully")
             veiw_category = f"select category_id from bookstore_category where category_name = '{i}'"
             cur.execute(veiw_category)
             category_id = cur.fetchall()
@@ -88,16 +78,30 @@ def add_category_table(category):
     connection.close()
     return category_id_list
 
-# def add_books_category_table(book_id,category_id_list):
-#     for i in range(len(category_id_list)):
 
-    
-    
+# defining function to add in books_category table  
+def add_books_category_table(book_id,category_id_list):
+    connection, cur = connection_database()
+    for i in category_id_list:
+        view_book_category = f"select id from bookstore_books_category where category_id = {i} & book_id = {book_id}"
+        cur.execute(view_book_category)
+        book_category_id = cur.fetchall()
+        if len(book_category_id):
+            book_category_id = book_category_id[0][0]
+        else:
+            add_new_book_category = f"insert into bookstore_books_category (category_id,book_id) values({i},{book_id});"
+            cur.execute(add_new_book_category)
+            connection.commit()
+            # print(f"New category '{i}' added successfully")
+            view_book_category = f"select id from bookstore_books_category where category_id = {i} & book_id = {book_id}"
+            cur.execute(view_book_category)
+            book_category_id = cur.fetchall()
+            if len(book_category_id):
+                book_category_id = book_category_id[0][0]
+    connection.close()
+    return 
 
-
-    
-
-
+# defining all the options
 def bookstore_options():
     print("""Bookstore Management System with Sales Analysis
 ---------------------------------------------
@@ -111,7 +115,8 @@ def bookstore_options():
     choice = input('Enter your choice: ')
     return choice
 
-def add_book():
+# defining the Manage Books option
+def manage_book():
     book_title = input('Enter Book Title[*]: ').strip().title()
     author_name = input('Enter Author name[*]: ').strip().title()
     category = input('Enter Book category[*]: ').strip().title()
@@ -126,14 +131,15 @@ def add_book():
 
     if book_title == '' or book_title == '0' or author_name == '' or author_name == '0' or category == '' or category == '0' or book_MRP == '' or book_MRP == '0' or book_inventory == '':
         print("Mandatory field can't be blank or 0")
-        add_book()
+        manage_book()
     else:
         book_id = add_book_table(book_title,author_name,book_cp,book_sp,book_MRP,book_inventory)
         author_id = add_author_table(author_name)
         category_id_list = add_category_table(category)
+        add_books_category_table(book_id,category_id_list)
 
-        print(book_id,author_id,category_id_list)
-
+    print(f"New book '{book_title}' added successfully")
+    return
         
     
 

@@ -4,7 +4,7 @@ from settings import *
 choice = bookstore_options()
 
 if choice == '1':
-    add_book()
+    manage_book()
 
 
 
